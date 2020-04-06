@@ -2,20 +2,21 @@
 # urllib.urlretrieve('https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_daily_reports/04-04-2020.csv', 'csv.csv') as csvfile:
 
 
-import wget
+from urllib.request import urlopen
 import csv
 from pathlib import Path
 month = 2
 day = 1
 maxday = 0
 curday = 5
+curmonth = 4
 firstFlag = True
-while month <= 4:
+while month <= curmonth:
     if month == 3:
         maxday = 31
     elif month == 2:
         maxday = 29
-    elif month == 4:
+    elif month == curmonth:
         maxday = curday
 
     while day <= maxday:
@@ -27,18 +28,16 @@ while month <= 4:
             curfile = str(curfile)
         file = Path(curfile)
         if not file.is_file():
-            csvfile = wget.download('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'+curfile)
-        try:
-            with open(curfile, 'r') as f:
-                reader = csv.reader(f)
-                for row in reader:
-                    if firstFlag:
-                        print(row)
-                    firstFlag = False
-                    if row[3] == "Germany" or row[1] == "Germany":
-                        print(row)
-        except:
-            print("file does not exist")
+            f = urlopen('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'+curfile)
+        f = str(f.read()).replace('\\r\\n','!').replace('\\n','!').split('!')
+        for row in f:
+            row = row.split(',')
+            if len(row) > 1:
+                if firstFlag:
+                    print(row, day, month)
+                firstFlag = False
+                if row[3] == "Germany" or row[1] == "Germany":
+                    print(row, day, month)
         day += 1
     month += 1
     day = 1
