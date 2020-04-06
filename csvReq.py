@@ -10,7 +10,9 @@ day = 1
 maxday = 0
 curday = 5
 curmonth = 4
-firstFlag = True
+firstFlag = True #not needed
+dataArray = []
+array = []
 while month <= curmonth:
     if month == 3:
         maxday = 31
@@ -33,17 +35,24 @@ while month <= curmonth:
         for row in f:
             row = row.split(',')
             if len(row) > 1:
-                if firstFlag:
-                    print(row, day, month)
-                firstFlag = False
                 if row[3] == "Germany" or row[1] == "Germany":
-                    print(row, day, month)
+                    if len(row) > 8:
+                        print(row, day, month)
+                        array.append(row[7])
+                        array.append(row[8])
+                        array.append(row[9])
+                        array.append(day)
+                        array.append(month)
+                    else:
+                        print(row, day, month)
+                        array.append(row[3])
+                        array.append(row[4])
+                        array.append(row[5])
+                        array.append(day)
+                        array.append(month)
         day += 1
+        dataArray.append(array)
+        array = []
     month += 1
     day = 1
-
-
-
-# spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-# for row in spamreader:
-#     print(', '.join(row))
+    print(dataArray)
