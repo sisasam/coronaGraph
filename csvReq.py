@@ -1,58 +1,89 @@
-# import urllib
-# urllib.urlretrieve('https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_daily_reports/04-04-2020.csv', 'csv.csv') as csvfile:
-
-
 from urllib.request import urlopen
-import csv
-from pathlib import Path
-month = 2
-day = 1
-maxday = 0
-curday = 5
-curmonth = 4
-firstFlag = True #not needed
-dataArray = []
-array = []
-while month <= curmonth:
-    if month == 3:
-        maxday = 31
-    elif month == 2:
-        maxday = 29
-    elif month == curmonth:
-        maxday = curday
+import os
 
-    while day <= maxday:
-        if day < 10:
-            curfile = "0"+str(month)+"-0"+str(day)+"-2020.csv"
-            curfile = str(curfile)
-        else:
-            curfile = "0"+ str(month)+"-"+str(day)+"-2020.csv"
-            curfile = str(curfile)
-        file = Path(curfile)
-        if not file.is_file():
-            f = urlopen('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'+curfile)
-        f = str(f.read()).replace('\\r\\n','!').replace('\\n','!').split('!')
-        for row in f:
-            row = row.split(',')
-            if len(row) > 1:
-                if row[3] == "Germany" or row[1] == "Germany":
-                    if len(row) > 8:
-                        print(row, day, month)
-                        array.append(row[7])
-                        array.append(row[8])
-                        array.append(row[9])
-                        array.append(day)
-                        array.append(month)
-                    else:
-                        print(row, day, month)
-                        array.append(row[3])
-                        array.append(row[4])
-                        array.append(row[5])
-                        array.append(day)
-                        array.append(month)
-        day += 1
-        dataArray.append(array)
-        array = []
-    month += 1
+
+def request():
+    month = 2
     day = 1
-    print(dataArray)
+    maxday = 0
+    curday = 5
+    curmonth = 4
+    dataArray = []
+    array = []
+    while month <= curmonth:
+        print("-- fetching Data -- this might take a while -- ")
+        print("currently fetching data for Month: "+ str(month))
+        if month == 3:
+            maxday = 31
+        elif month == 2:
+            maxday = 29
+        elif month == curmonth:
+            maxday = curday
+
+        while day <= maxday:
+            if day < 10:
+                curfile = "0" + str(month) + "-0" + str(day) + "-2020.csv"
+                curfile = str(curfile)
+            else:
+                curfile = "0" + str(month) + "-" + str(day) + "-2020.csv"
+                curfile = str(curfile)
+            f = urlopen(
+                'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/' + curfile)
+            f = str(f.read()).replace('\\r\\n', '!').replace('\\n', '!').split('!')
+            for row in f:
+                row = row.split(',')
+                if len(row) > 1:
+                    if row[3] == "Germany" or row[1] == "Germany":
+                        if len(row) > 8:
+                            i = 7
+                            while i < 10:
+                                array.append(row[i])
+                                i += 1
+                        else:
+                            i = 3
+                            while i < 6:
+                                array.append(row[i])
+                                i += 1
+                        array.append(day)
+                        array.append(month)
+            day += 1
+            dataArray.append(array)
+            array = []
+        month += 1
+        day = 1
+    return dataArray
+
+
+def makeFile(array):
+    file = open("dataString", 'w')
+    for item in array:
+        for i in item:
+            file.write("%s," %i)
+        file.write("\n")
+
+
+def checkFile(file):
+
+    if os.path.isfile(file):
+        return True
+    else:
+        return False
+
+
+def returnArray():
+    if not checkFile("dataString"):
+        dataarray = request()
+        makeFile(dataarray)
+        return dataarray
+    else:
+        dataarray = []
+        innerarray = []
+        fh = open("dataString", "r")
+        data = fh.read().split('\n')
+        fh.close()
+        for i in data:
+            innerarray = i.split(',')
+            innerarray.remove('')
+            dataarray.append(innerarray)
+        dataarray.remove([])
+        return dataarray
