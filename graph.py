@@ -49,8 +49,8 @@ def makeGraph():
 
     #Verlaufsgraph
     fig, ax1 = plt.subplots()
-    #Anstiegsgraph
-    fig2, ax2 = plt.subplots()
+
+    ax1.set_yscale('log')
 
     # fig = plt.figure(figsize=(20, 10))
     # ax1 = fig.add_subplot(121)
@@ -60,7 +60,7 @@ def makeGraph():
     ax1.plot(xValues,yRec, label="Confirmed Recovered" )
 
     plt.xlabel("Days")
-    plt.ylabel("Humans")
+    plt.ylabel("Humans in 'log' scale")
 
     plt.legend()
     plt.grid(True)
@@ -68,6 +68,9 @@ def makeGraph():
     fig.tight_layout()
 
     #####################################################################
+
+    #Anstiegsgraph
+    fig2, ax2 = plt.subplots()
 
     ax2.bar(xValues, yIncrease, label="Increase")
 
