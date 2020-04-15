@@ -3,33 +3,89 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot():
+def makeGraph():
     x = 1
     xValues = []
-    yValues = []
+    yConf = []
+    yDeath = []
+    yRec = []
+    yIncrease = [] #hier
+    inc = 0 # hier
     val = returnArray()
     while x < len(val)+1:
         xValues.append(x)
         x += 1
-    print(xValues)
 
     for i in val:
-        yValues.append(i[1])
+        yConf.append(i[0])
+        yDeath.append(i[1])
+        yRec.append(i[2])
 
-    # Initialize the plot
-    fig = plt.figure(figsize=(20, 10))
-    ax1 = fig.add_subplot(121)
+    yConf = list(map(int, yConf))
+    yDeath = list(map(int, yDeath))
+    yRec = list(map(int, yRec))
 
-    # or replace the three lines of code above by the following line:
-    # fig, (ax1, ax2) = plt.subplots(1,2, figsize=(20,10))
+    x = 0
+    for i in yConf:
+        try:
+            inc = i - x
+            yIncrease.append(inc)
+            x = i
+        except:
+            print("lasr Element reached")
+            break
 
-    # Plot the data
-    ax1.bar(xValues, yValues)
+    print("Anstieg:", yIncrease)
+    print(len(yIncrease))
+    print(len(xValues))
+
+    # # Initialize the plot
+    #
+    # # or replace the three lines of code above by the following line:
+    # # fig, (ax1, ax2) = plt.subplots(1,2, figsize=(20,10))
+    #
+    # # Plot the data
+    # ax1.bar(xValues, yValues)
+
+    #Verlaufsgraph
+    fig, ax1 = plt.subplots()
+    #Anstiegsgraph
+    fig2, ax2 = plt.subplots()
+
+    # fig = plt.figure(figsize=(20, 10))
+    # ax1 = fig.add_subplot(121)
+
+    ax1.plot(xValues,yConf, label="Confirmed Cases" )
+    ax1.plot(xValues,yDeath, label="Confirmed Deaths" )
+    ax1.plot(xValues,yRec, label="Confirmed Recovered" )
+
+    plt.xlabel("Days")
+    plt.ylabel("Humans")
+
+    plt.legend()
+    plt.grid(True)
+
+    fig.tight_layout()
+
+    #####################################################################
+
+    ax2.bar(xValues, yIncrease, label="Increase")
+
+    plt.xlabel("Days")
+    plt.ylabel("Humans")
+
+    plt.legend()
+    plt.grid(True)
+
+    fig2.tight_layout()
+
+
+    # plt.ylim(-.5, 1000)
 
     # Show the plot
     plt.show()
 
-plot()
+makeGraph()
 
 # req = request()
 
