@@ -6,6 +6,7 @@ import numpy as np
 def makeGraph():
     x = 1
     xValues = []
+    xValuesLable = []
     yConf = []
     yDeath = []
     yRec = []
@@ -15,6 +16,9 @@ def makeGraph():
     while x < len(val)+1:
         xValues.append(x)
         x += 1
+    for i in val:
+        xValuesLable.append(('0' + str(i[3]) + '.' + '0' + str(i[4])))
+
 
     for i in val:
         yConf.append(i[0])
@@ -32,7 +36,7 @@ def makeGraph():
             yIncrease.append(inc)
             x = i
         except:
-            print("lasr Element reached")
+            print("last Element reached")
             break
 
     print("Anstieg:", yIncrease)
@@ -64,6 +68,11 @@ def makeGraph():
 
     plt.legend()
     plt.grid(True)
+
+    plt.tick_params(axis='x', which='major', labelsize=10)
+    plt.xticks(rotation=45)
+    ax1.set_xticklabels(xValuesLable)
+    print(xValuesLable)
 
     fig.tight_layout()
 
