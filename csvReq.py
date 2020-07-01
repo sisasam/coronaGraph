@@ -1,6 +1,8 @@
 from urllib.request import urlopen
 import os
 import datetime
+from pandas import DataFrame, read_csv
+import pandas as pd
 
 def request():
     f = None
@@ -20,6 +22,12 @@ def request():
             maxday = 31
         elif month == 2:
             maxday = 29
+        elif month == 4:
+            maxday = 30
+        elif month == 5:
+            maxday = 31
+        elif month == 6:
+            maxday = 30
         elif month == curmonth:
             maxday = curday
 
@@ -31,28 +39,28 @@ def request():
                 curfile = "0" + str(month) + "-" + str(day) + "-2020.csv"
                 curfile = str(curfile)
             try:
-                f = urlopen(
-                    'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/' + curfile)
-                f = str(f.read()).replace('\\r\\n', '!').replace('\\n', '!').split('!')
+                if month < 3 or month == 3 and day < 22:
+                    f = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/' + curfile
+                    df = pd.read_csv(f, usecols = [ "Country/Region" , "Confirmed" , "Deaths" , "Recovered"], sep=',')
+                    res = df[df["Country/Region"] == "Germany"]
+                else:
+                    f = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/' + curfile
+                    df = pd.read_csv(f, usecols=["Country_Region", "Confirmed", "Deaths", "Recovered"], sep=',')
+                    res = df[df["Country_Region"] == "Germany"]
+                print(res)
+                totalc = 0
+                totald = 0
+                totalr = 0
+                for i in res.values:
+                    totalc = totalc + i[1]
+                    totald = totald + i[2]
+                    totalr = totalr + i[3]
+                    print(i[1])
+                print(totalc)
+                array.extend((totalc, totald, totalr, day, month))
             except:
-                print("No file for", curfile, "found")
+                print("No file for", f, "found")
                 notFoundDay = True
-            for row in f:
-                row = row.split(',')
-                if len(row) > 1:
-                    if row[3] == "Germany" or row[1] == "Germany":
-                        if len(row) > 8:
-                            i = 7
-                            while i < 10:
-                                array.append(row[i])
-                                i += 1
-                        else:
-                            i = 3
-                            while i < 6:
-                                array.append(row[i])
-                                i += 1
-                        array.append(day)
-                        array.append(month)
             day += 1
             dataArray.append(array)
             array = []
